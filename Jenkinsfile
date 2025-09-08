@@ -42,17 +42,11 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') {
-            steps {
-                // 步骤 1: 从 Git 拉取代码
-                git branch: 'master',
-                    url: 'https://github.com/protobuf-c/protobuf-c.git'
-            }
-        }
 
         stage('Setup Environment') {
             steps {
                 script {
+                    checkout scm
                     // 步骤 2: 设置构建环境
                     sh '''
                         echo "=== 构建环境信息 ==="
