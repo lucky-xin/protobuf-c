@@ -48,7 +48,7 @@ pipeline {
                 script {
                     checkout scm
                     // 步骤 2: 设置构建环境
-                    sh '''
+                    sh """
                         echo "=== 构建环境信息 ==="
                         echo "操作系统: $(uname -a)"
                         echo "架构: $(uname -m)"
@@ -61,7 +61,7 @@ pipeline {
                         # 创建必要的目录
                         mkdir -p ${INSTALL_DIR}
                         mkdir -p ${BUILD_DIR}
-                    '''
+                    """
                 }
             }
         }
@@ -78,9 +78,9 @@ pipeline {
             steps {
                 script {
                     // 步骤 3: 验证预构建的 Docker 镜像环境
-                    sh '''
+                    sh """
                         echo "=== 验证预构建环境 ==="
-                        echo "使用镜像: xin8/protobuf-c-builder:latest"
+                        echo "使用镜像: ${BUILD_IMAGE}"
                         echo "当前用户: $(whoami)"
                         echo "工作目录: $(pwd)"
 
@@ -99,7 +99,7 @@ pipeline {
                         pkg-config --exists libprotoc && echo "libprotoc: OK" || echo "libprotoc: MISSING"
 
                         echo "=== 预构建环境验证完成 ==="
-                    '''
+                    """
                 }
             }
         }
@@ -124,7 +124,7 @@ pipeline {
             steps {
                 script {
                     // 步骤 4: 使用 autotools 构建
-                    sh '''
+                    sh """
                         echo "=== 开始 Autotools 构建 ==="
                         
                         # 生成构建系统
@@ -149,7 +149,7 @@ pipeline {
                         make install
                         
                         echo "=== Autotools 构建完成 ==="
-                    '''
+                    """
                 }
             }
         }
@@ -173,7 +173,7 @@ pipeline {
 
             steps {
                 script {
-                    sh '''
+                    sh """
                         echo "=== 开始 CMake 构建 ==="
                         
                         cd ${BUILD_DIR}
@@ -199,7 +199,7 @@ pipeline {
                         cmake --build . --target install
                         
                         echo "=== CMake 构建完成 ==="
-                    '''
+                    """
                 }
             }
         }
@@ -210,7 +210,7 @@ pipeline {
             }
             steps {
                 script {
-                    sh '''
+                    sh """
                         echo "=== 生成文档 ==="
                         
                         # 生成 Doxygen 文档
@@ -221,7 +221,7 @@ pipeline {
                         fi
                         
                         echo "=== 文档生成完成 ==="
-                    '''
+                    """
                 }
             }
         }
@@ -230,7 +230,7 @@ pipeline {
             steps {
                 script {
                     // 步骤 5: 列出构建产物，确认文件
-                    sh '''
+                    sh """
                         echo "=== 构建产物收集 ==="
                         
                         # 显示目录结构
@@ -245,7 +245,7 @@ pipeline {
                         # 显示文件大小
                         echo "=== 产物文件大小 ==="
                         du -sh ${INSTALL_DIR}/* || true
-                    '''
+                    """
                 }
             }
         }
